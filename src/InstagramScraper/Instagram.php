@@ -1220,6 +1220,7 @@ class Instagram
             throw new InstagramException('Count must be greater than or equal to page size.');
         }
 
+        $firstRequest = true;
         while (true) {
             $response = Request::get(Endpoints::getFollowingJsonLink($accountId, $pageSize, $endCursor),
                 $this->generateHeaders($this->userSession));
@@ -1234,8 +1235,17 @@ class Instagram
 
             $edgesArray = $jsonResponse['data']['user']['edge_follow']['edges'];
             if (count($edgesArray) === 0) {
-                throw new InstagramException('Failed to get followers of account id ' . $accountId . '. The account is private.', static::HTTP_FORBIDDEN);
+                if ($firstRequest) {
+                    throw new InstagramException(
+                        'Failed to get followers of account id '.$accountId.'. The account is private.',
+                        static::HTTP_FORBIDDEN
+                    );
+                } else {
+                    return $accounts;
+                }
             }
+
+            $firstRequest = false;
 
             foreach ($edgesArray as $edge) {
                 $accounts[] = $edge['node'];
