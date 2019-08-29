@@ -1594,6 +1594,7 @@ class Instagram
      * @param string $notFoundMessage
      * @throws InstagramException
      * @throws InstagramTooManyRequestsException
+     * @throws InstagramNotFoundException
      */
     protected function checkResponseCode(Response $response, $notFoundMessage = 'Instagram returned 404')
     {
@@ -1602,7 +1603,7 @@ class Instagram
         }
 
         if (static::HTTP_NOT_FOUND === $response->code) {
-            throw new InstagramTooManyRequestsException($notFoundMessage);
+            throw new InstagramNotFoundException($notFoundMessage);
         }
 
         if ($response->code !== static::HTTP_OK) {
