@@ -361,10 +361,15 @@ class Instagram
         $userArray = self::extractSharedDataFromBody($response->raw_body);
 
         if (isset($userArray['entry_data']['LoginAndSignupPage'])) {
-           throw new InstagramException(
-               'Instagram redirected to login and signup page. Rate limiting occured. Try to use other ip or try crawling with authentication.',
-               self::HTTP_TOO_MANY_REQUESTS
+           throw new InstagramTooManyRequestsException(
+               'Instagram redirected to login and signup page. Rate limiting occured. Try to use other ip or try crawling with authentication.'
            ) ;
+        }
+
+        if (empty($userArray['entry_data']['ProfilePage'][0])) {
+            throw new InstagramTooManyRequestsException(
+                'Instagram returned empty ProfilePage, another rate limiting issue'
+            );
         }
 
         if (!isset($userArray['entry_data']['ProfilePage'][0]['graphql']['user'])) {
