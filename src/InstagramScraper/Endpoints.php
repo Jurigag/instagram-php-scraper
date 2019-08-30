@@ -203,4 +203,9 @@ class Endpoints
         $url = str_replace('{commentId}', $commentId, $url);
         return $url;
     }
+
+    public static function getFeedJson()
+    {
+        return static::USER_FEED;
+    }
 }
